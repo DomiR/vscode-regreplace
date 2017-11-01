@@ -1,0 +1,122 @@
+{
+	"name": "regreplace",
+	"displayName": "regreplace",
+	"description": "Regular expressions replacing befor save.",
+	"version": "1.0.0",
+	"publisher": "DomiR",
+	"license": "MIT",
+	"homepage":
+		"https://github.com/DomiR/vscode-regreplace/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/DomiR/vscode-regreplace.git"
+	},
+	"galleryBanner": {
+		"color": "#2980b9",
+		"theme": "dark"
+	},
+	"icon": "assets/logo.png",
+	"bugs": {
+		"url": "https://github.com/DomiR/vscode-regreplace/issues"
+	},
+	"engines": {
+		"vscode": "^1.6.0"
+	},
+	"categories": ["Languages", "Other"],
+	"keywords": ["ES6", "ES2015", "OnSave", "Replace"],
+
+	"activationEvents": ["*"],
+	"main": "./out/src/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "regreplace.regreplace",
+				"title": "Run RegReplace"
+			}
+		],
+		"configuration": {
+			"title": "Regreplace configuration",
+			"properties": {
+				"regreplace.on-save": {
+					"type": "boolean",
+					"default": true,
+					"description": "Regreplace on save."
+				},
+				"regreplace.suppress-warnings": {
+					"type": "boolean",
+					"default": false,
+					"description": "Suppress warnings when regreplace fails."
+				},
+				"regreplace.commands": {
+					"type": "array",
+					"default": [],
+					"description": "Replace commands.",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "Command name for debugging.",
+								"default": ".*"
+							},
+							"match": {
+								"type": ["string", "array"],
+								"items": {
+									"type": "string"
+								},
+								"description": "Regex for matching files to run commands on. e.g. \"\\.(ts|js|tsx)$\"",
+								"default": ".*"
+							},
+							"exclude": {
+								"type": ["string", "array"],
+								"items": {
+									"type": "string"
+								},
+								"description": "Regex for matching files *not* to run commands on. e.g. \"^\\.$\" exclude dot files",
+								"default": ""
+							},
+							"priority": {
+								"type": "number",
+								"description": "Command priority determines order.",
+								"default": 0
+							},
+							"find": {
+								"type": "string",
+								"description": "Use simple find command. e.g. \"** what\"",
+								"default": ""
+							},
+							"regexp": {
+								"type": "string",
+								"description": "Use regexp find command. Needs to be escaped. e.g. \"(\\n)*\"",
+								"default": ""
+							},
+							"replace": {
+								"type": "string",
+								"description": "Replace text. Supports groups. e.g. \"$2\n$1\"",
+								"default": ""
+							},
+							"global": {
+								"type": "boolean",
+								"description": "Run command asynchronously.",
+								"default": false
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"release": "vsce publish",
+		"minor": "vsce publish minor",
+		"package": "vsce package"
+	},
+	"devDependencies": {
+		"@types/node": "^6.0.46",
+		"typescript": "^2.0.6",
+		"vscode": "^1.0.3"
+	}
+}
