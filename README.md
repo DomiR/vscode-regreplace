@@ -41,7 +41,7 @@ This sample configuration will remove newlines from end of file.
 "regreplace.commands": [
    {
       "match": ".(ts|js|tsx)$",  // typescript
-      "regexp": "\n+$",          // escaped regexp
+      "regexp": "\\n+$",          // escaped regexp
       "global": true,            // glob
       "replace": ""              // replace with empty string
    }
