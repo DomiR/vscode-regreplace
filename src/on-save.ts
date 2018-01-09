@@ -44,8 +44,7 @@ export default {
     bypass(action) {
         this.unregister();
         const result = action();
-        this.update();
-        return result;
+        return result.then(() => this.update());
     }
 };
 

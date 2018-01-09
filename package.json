@@ -31,7 +31,11 @@
 		"commands": [
 			{
 				"command": "regreplace.regreplace",
-				"title": "Run RegReplace"
+				"title": "RegReplace: Run"
+			},
+			{
+				"command": "regreplace.save-without-regreplace",
+				"title": "RegReplace: Save without replacing"
 			}
 		],
 		"configuration": {
