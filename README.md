@@ -36,53 +36,34 @@ This extension contributes the following settings:
 
 
 ### Sample Config
-This sample configuration will remove newlines from end of file.
+
+This sample configuration will replace single quotes with double quotes.
 ```typescript
 "regreplace.commands": [
    {
-      "match": ".(ts|js|tsx)$",  // typescript
-      "regexp": "\\n+$",          // escaped regexp
-      "global": true,            // glob
-      "replace": ""              // replace with empty string
+      "match": ".html?$",      // html
+      "regexp": "(')(.*?)(')", // single quotes
+      "global": true,          // glob
+      "replace": "\"$2\""      // replace with double quotes
    }
 ]
 ```
 
 
 ## Known Issues
-
-None yet :)
+- Cursor will be placed at end of file after saving
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 1.1.0
+- Breaking Change: Renaming command `Run RegReplace` to `RegReplace: Run`
+- Adding `RegReplace: Save without replacing`
 
 ### 1.0.0
-
-Initial release of regreplace.
+- Initial release of regreplace.
 
 -----------------------------------------------------------------------------------------------------------
 
 ## Licence
-
 MIT License
 
-Copyright (c) 2017 DomiR
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
