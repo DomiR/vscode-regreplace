@@ -39,7 +39,11 @@
         "commands": [
             {
                 "command": "regreplace.regreplace",
-                "title": "RegReplace: Run"
+                "title": "RegReplace: Run all"
+            },
+            {
+                "command": "regreplace.run-single-rule",
+                "title": "RegReplace: Run single rule"
             },
             {
                 "command": "regreplace.save-without-regreplace",

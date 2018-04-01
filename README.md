@@ -25,8 +25,9 @@ This extension contributes the following settings:
 * `suppress-warnings` - (optional) Suppress warnings when regreplace fails.
 * `commands` - array of commands that will be run whenever a file is saved.
   * `name` - command name for debugging.
-  * `match` - regex for matching files to run commands on. e.g. \"\\.(ts|js|tsx)$\"
+  * `match` - regex for matching files to run commands on. e.g. \"\\.(ts|js|tsx)$\" or ["\\.(ts|js|tsx)$"]
   * `exclude` - regex for matching files *not* to run commands on. e.g. \"^\\.$\" exclude dot files
+  * `language` - used instead of match, exclude will still work e.g. "typescript"
   * `priority` - command priority determines order.
   * `find` - use simple find command. e.g. \"** what\"
   * `regexp` - use regexp find command. Needs to be escaped. e.g. \"(\\n)*\"
@@ -40,20 +41,33 @@ This extension contributes the following settings:
 This sample configuration will replace single quotes with double quotes.
 ```typescript
 "regreplace.commands": [
-   {
-      "match": ".html?$",      // html
+  {
+      "match": "\\.html?$",    // html
       "regexp": "(')(.*?)(')", // single quotes
-      "global": true,          // glob
+      "global": true,          // global
       "replace": "\"$2\""      // replace with double quotes
-   }
+  },
+  {
+      "name": "classname helper",        // name
+      "language": "typescriptreact",     // use vscode language names
+      "regexp": "className=\\\"(.+)\"",  // escaped regex
+      "global": true,                    // global
+      "replace": "className={styles.$1}" // replaced value
+  },
 ]
 ```
 
 
 ## Known Issues
-- Cursor will be placed at end of file after saving
 
 ## Release Notes
+
+### 1.2.0
+- Breaking Change: Renaming command `RegReplace: Run all` to `RegReplace: Run all`
+- Use diff patching, so we can keep the cursor position
+- Fix typos in readme, thanks @atnbueno
+- Add language config, thanks @atnbueno
+- Adding `RegReplace: Run single rule`, thanks @iammoen
 
 ### 1.1.0
 - Breaking Change: Renaming command `Run RegReplace` to `RegReplace: Run`

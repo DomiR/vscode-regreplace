@@ -20,7 +20,7 @@ import * as DiffMatchPatch from 'diff-match-patch';
  *
  * @param document document to work on
  */
-export function calculateTargetTextForAllRules(document: TextDocument): string {
+export function calculateTargetTextForAllRules(document: TextDocument, singleCommand?: ICommand): string {
     try {
         const commands = getConfiguration<ICommand[]>('commands');
 
@@ -52,7 +52,7 @@ export function calculateTargetTextForAllRules(document: TextDocument): string {
 
                 // check if language is set
                 const hasLanugageId = cfg.language != null;
-                const isLanguageMatch = typeof cfg.language === "string" ? language === cfg.language : cfg.language.some(l => l === language);;
+                const isLanguageMatch = hasLanugageId && (typeof cfg.language === "string" ? language === cfg.language : cfg.language.some(l => l === language));
 
                 // negation wins over match
                 return !isNegate && (hasLanugageId ? isLanguageMatch : isMatch);
@@ -66,9 +66,12 @@ export function calculateTargetTextForAllRules(document: TextDocument): string {
         // sort commands with priority
         const sortedCommands = activeCommands.sort((a, b) => (a.priority || 0) - (b.priority || 0))
 
+        // use single command if provided
+        const usedCommands = singleCommand != null ? [singleCommand] : sortedCommands;
+
         // run through all active commands
         let resultText = currentText;
-        activeCommands.forEach(command => {
+        usedCommands.forEach(command => {
             if (command == null) { return; }
             try {
                 let regexQuery, regexReplace;
@@ -94,11 +97,11 @@ export function calculateTargetTextForAllRules(document: TextDocument): string {
 
             } catch (error) {
                 if (!getConfiguration<boolean>('suppress-warnings')) {
-                    window.showWarningMessage(`Error regreplacing in command ${command.name}: ${error}`);
+                    window.showWarningMessage(`Error regreplacing in command ${command.name || 'Unnamed rule'}: ${error}`);
                 }
                 return null;
             }
-        });
+        })
 
         return resultText;
     } catch (error) {
@@ -220,16 +223,11 @@ export function getCustomEdits(source, target): CustemTextEdit[] {
 
 //
 // ------------------------------
-export function regreplaceCurrentDocument() {
+function applyEditsForNewText(regreplacedText) {
     const {
         activeTextEditor: editor,
         activeTextEditor: { document }
     } = window;
-
-    const regreplacedText = calculateTargetTextForAllRules(document);
-    if (!regreplacedText || regreplacedText === document.getText()) {
-        return;
-    }
 
     return editor
         .edit(edit => {
@@ -250,9 +248,43 @@ export function regreplaceCurrentDocument() {
         })
 }
 
+export function regreplaceCurrentDocument() {
+    const {
+        activeTextEditor: editor,
+        activeTextEditor: { document }
+    } = window;
+
+    const regreplacedText = calculateTargetTextForAllRules(document);
+    if (!regreplacedText || regreplacedText === document.getText()) {
+        return;
+    }
+
+    applyEditsForNewText(regreplacedText);
+}
+
 export async function saveWithoutReplacing() {
     const { document } = window.activeTextEditor;
     onSave.bypass(async () => await document.save());
+}
+
+export function runSingleRule() {
+    const { activeTextEditor: { document }} = window;
+    const commands = getConfiguration<ICommand[]>('commands');
+    const commandNames = commands.map((cmd, idx) => `${idx}: ${cmd.name}` || `${idx}: Unnamed rule`)
+    window.showQuickPick(commandNames).then(selected => {
+        console.log(selected);
+        if (selected != null) {
+            const idx = parseInt(selected.substring(0, selected.indexOf(':')))
+            const command = commands[idx];
+
+            const regreplacedText = calculateTargetTextForAllRules(document, command);
+            if (!regreplacedText || regreplacedText === document.getText()) {
+                return;
+            }
+
+            applyEditsForNewText(regreplacedText);
+        }
+    })
 }
 
 
