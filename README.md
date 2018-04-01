@@ -4,6 +4,9 @@ Reg Replace is a plugin for Visual Studio Code that allows the creating of comma
 
 It is heavily inspired from [Reg Replace for Sublime Text](https://github.com/facelessuser/RegReplace)
 
+Often linters and code formatters cannot do this easily.
+![usage](assets/usage.gif)
+
 ## Features
 
 - Create find and replace rules that can then be used to create VSCode Commands to call at any time.
