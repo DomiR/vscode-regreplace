@@ -84,7 +84,7 @@
                                     "type": "string"
                                 },
                                 "description": "LanguageId used instead of match, (exclude will still work) e.g. \"typescript\"",
-                                "default": ".*"
+                                "default": "javascript"
                             },
                             "match": {
                                 "type": [
