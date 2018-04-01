@@ -75,6 +75,17 @@
                                 "description": "Command name for debugging.",
                                 "default": ".*"
                             },
+                            "language": {
+                                "type": [
+                                    "string",
+                                    "array"
+                                ],
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "LanguageId used instead of match, (exclude will still work) e.g. \"typescript\"",
+                                "default": ".*"
+                            },
                             "match": {
                                 "type": [
                                     "string",
