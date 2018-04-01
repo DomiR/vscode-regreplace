@@ -11,12 +11,18 @@ import { saveWithoutReplacing, regreplaceCurrentDocument, runSingleRule } from '
 import { EXTENSION_NAME } from './utils';
 
 export function activate({ subscriptions }: ExtensionContext) {
-    subscriptions.push(commands.registerCommand(EXTENSION_NAME + '.regreplace', regreplaceCurrentDocument));
-    subscriptions.push(commands.registerCommand(EXTENSION_NAME + '.save-without-regreplace', saveWithoutReplacing));
-    subscriptions.push(commands.registerCommand(EXTENSION_NAME + '.run-single-rule', runSingleRule));
+	subscriptions.push(
+		commands.registerCommand(EXTENSION_NAME + '.regreplace', regreplaceCurrentDocument),
+	);
+	subscriptions.push(
+		commands.registerCommand(EXTENSION_NAME + '.save-without-regreplace', saveWithoutReplacing),
+	);
+	subscriptions.push(
+		commands.registerCommand(EXTENSION_NAME + '.run-single-rule', runSingleRule),
+	);
 
-    onSave.update();
-    workspace.onDidChangeConfiguration(() => onSave.update());
+	onSave.update();
+	workspace.onDidChangeConfiguration(() => onSave.update());
 }
 
-export function deactivate() { }
+export function deactivate() {}
