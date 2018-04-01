@@ -30,6 +30,8 @@ export function calculateTargetTextForAllRules(document: TextDocument): string {
         const directory = dirname(fileName);
         const fileMatches = (pattern: string) => pattern && pattern.length > 0 && new RegExp(pattern).test(fileName);
 
+        const language = document.languageId;
+
         // filter all commands with filematch patterns
         const activeCommands = commands
             .filter(cfg => {
@@ -48,8 +50,12 @@ export function calculateTargetTextForAllRules(document: TextDocument): string {
                     ? negatePattern.length > 0 && fileMatches(negatePattern)
                     : negatePattern.some(mp => fileMatches(mp));
 
+                // check if language is set
+                const hasLanugageId = cfg.language != null;
+                const isLanguageMatch = typeof cfg.language === "string" ? language === cfg.language : cfg.language.some(l => l === language);;
+
                 // negation wins over match
-                return !isNegate && isMatch;
+                return !isNegate && (hasLanugageId ? isLanguageMatch : isMatch);
             });
 
         // return if no commands
@@ -256,12 +262,13 @@ export async function saveWithoutReplacing() {
 // types
 // ------------------------------
 interface ICommand {
-	name?: string;              // just for keepsake
-	match?: string|string[];    // regex expression e.g. "\\.(ts|js|tsx)$"
-	exclude?: string|string[];  // will overrule match e.g. "^\\.$" exclude dot files
-	priority?: number;          // execution prio
-	find?: string;              // use regular search e.g. "** what"
-	regexp?: string             // use regexp, need to escape e.g. "(\\n)*"
-	replace: string;            // replace with groups e.g. "$2\n$1"
-	global?: boolean;           // default true, used in regexp
+    name?: string;              // just for keepsake
+    match?: string|string[];    // regex expression e.g. "\\.(ts|js|tsx)$" or ["\\.(ts|js|tsx)$"]
+    exclude?: string|string[];  // will overrule match e.g. "^\\.$" exclude dot files
+    language?: string|string[]; // used instead of match, exclude will still work e.g. "typescript"
+    priority?: number;          // execution prio
+    find?: string;              // use regular search e.g. "** what"
+    regexp?: string             // use regexp, need to escape e.g. "(\\n)*"
+    replace: string;            // replace with groups e.g. "$2\n$1"
+    global?: boolean;           // default true, used in regexp
 }
