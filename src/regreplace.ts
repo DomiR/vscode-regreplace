@@ -6,17 +6,21 @@
  */
 
 import { dirname, extname } from 'path';
-import { TextDocument, window } from 'vscode';
+import { TextDocument, window, TextEdit, TextEditorEdit, Range, Position } from 'vscode';
 import { getConfiguration, getMaxRange } from './utils';
 import onSave from './on-save';
+import * as DiffMatchPatch from 'diff-match-patch';
 
 
 
 
 
-// regreplace
-// ------------------------------
-export function regreplace(document: TextDocument): string {
+/**
+ * calculate target text by applying all active regex rules
+ *
+ * @param document document to work on
+ */
+export function calculateTargetTextForAllRules(document: TextDocument): string {
     try {
         const commands = getConfiguration<ICommand[]>('commands');
 
@@ -99,21 +103,146 @@ export function regreplace(document: TextDocument): string {
     }
 }
 
+/**
+ * calculate an array of diffs
+ *
+ * @param source text for diff
+ * @param target text for diff
+ */
+export function getDiff(source, target) {
+    var dmp = new DiffMatchPatch();
+    return dmp.diff_main(source, target);
+}
 
+/**
+ * we can calculate position from index
+ *
+ * @param text as string
+ * @param idx as number
+ */
+export function getPositionFromIndex(text: string, idx: number) {
+    var front = text.substring(0, idx);
+    var lineEndings = front.match(/\n/g);
+    var lineNum = 0;
+    if (lineEndings != null) {
+        lineNum = lineEndings.length;
+    }
+    var lastLine = front.lastIndexOf('\n')
+    var charPos = lastLine != -1 ? (idx - lastLine) - 1 : idx;
+    return new Position(lineNum, charPos);
+}
+
+export enum CustomEditType {
+    Replace = 0,
+    Delete = -1,
+    Insert = 1,
+}
+
+interface CustemTextEdit {
+    action: CustomEditType,
+    range: Range,
+    position?: Position,
+    value: string,
+}
+
+/**
+ * calculate array of custom text edits
+ *
+ * @param source text for edits
+ * @param target
+ */
+export function getCustomEdits(source, target): CustemTextEdit[] {
+    var diff = getDiff(source, target);
+
+    var edits = [];
+    var currentIndex = 0;
+
+    // for each diff in our
+    diff.forEach(([action, value], idx) => {
+        switch(action) {
+            case 0:
+                // keep action
+                // increase pointer with length
+                currentIndex += value.length;
+                break;
+            case -1:
+                // delete action
+                let fromIdx = currentIndex;
+                let toIdx = currentIndex + value.length;
+                let sourceRange = new Range(getPositionFromIndex(source, fromIdx), getPositionFromIndex(source, toIdx));
+
+                // if next action is insert we do replace instead
+                if (idx < (diff.length - 1) && diff[idx+1][0] === 1) {
+                    edits.push({
+                        action: CustomEditType.Replace,
+                        range: sourceRange,
+                        position: null,
+                        value: diff[idx+1][1]
+                    })
+                    currentIndex += value.length;
+                } else {
+                    edits.push({
+                        action: CustomEditType.Delete,
+                        range: sourceRange,
+                        position: null,
+                        value: ""
+                    })
+                    currentIndex += value.length;
+                }
+                break;
+            case 1:
+                // insert action
+                if (idx == 0 || diff[idx - 1][0] !== -1) {
+                    const p = getPositionFromIndex(source, currentIndex);
+                    edits.push({
+                        action: CustomEditType.Insert,
+                        range: new Range(p, p),
+                        position: p,
+                        value: value,
+                    })
+                }
+                // last action was delete, we skip
+                break;
+        }
+    })
+    return edits;
+}
+
+
+
+
+
+//
+// ------------------------------
 export function regreplaceCurrentDocument() {
     const {
         activeTextEditor: editor,
         activeTextEditor: { document }
     } = window;
 
-    const regreplacedText = regreplace(document);
-    if (!regreplacedText) {
+    const regreplacedText = calculateTargetTextForAllRules(document);
+    if (!regreplacedText || regreplacedText === document.getText()) {
         return;
     }
 
-    return editor.edit(edit => edit.replace(getMaxRange(), regreplacedText));
-}
+    return editor
+        .edit(edit => {
 
+            // v1 use diff edits
+            const edits = getCustomEdits(document.getText(), regreplacedText);
+            edits.forEach(e => {
+                switch (e.action) {
+                    case 0: edit.replace(e.range, e.value); break;
+                    case 1: edit.insert(e.position, e.value); break;
+                    case -1: edit.delete(e.range); break;
+                }
+            })
+            return edit;
+
+            // v0 use replace all
+            // return edit.replace(getMaxRange(), regreplacedText)
+        })
+}
 
 export async function saveWithoutReplacing() {
     const { document } = window.activeTextEditor;
