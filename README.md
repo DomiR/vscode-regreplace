@@ -28,8 +28,8 @@ This extension contributes the following settings:
 * `suppress-warnings` - (optional) Suppress warnings when regreplace fails.
 * `commands` - array of commands that will be run whenever a file is saved.
   * `name` - command name for debugging.
-  * `match` - regex for matching files to run commands on. e.g. \"\\.(ts|js|tsx)$\" or ["\\.(ts|js|tsx)$"]
-  * `exclude` - regex for matching files *not* to run commands on. e.g. \"^\\.$\" exclude dot files
+  * `match` - regex for matching files to run commands on. e.g. \"\\\\.(ts|js|tsx)$\" or ["\\\\.(ts|js|tsx)$"]
+  * `exclude` - regex for matching files *not* to run commands on. e.g. \"^\\\\.$\" exclude dot files
   * `language` - used instead of match, exclude will still work e.g. "typescript"
   * `priority` - command priority determines order.
   * `find` - use simple find command. e.g. \"** what\"
