@@ -46,7 +46,7 @@ This sample configuration will replace single quotes with double quotes.
 "regreplace.commands": [
   {
       "name": "single to double quote",
-      "match": "\\\\.html?$",    // html
+      "match": "\\.html?$",    // html
       "regexp": "(')(.*?)(')", // single quotes
       "global": true,          // global
       "replace": "\"$2\""      // replace with double quotes
