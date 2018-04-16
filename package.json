@@ -2,7 +2,7 @@
     "name": "regreplace",
     "displayName": "regreplace",
     "description": "Regular expressions replacing befor save.",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "publisher": "DomiR",
     "license": "MIT",
     "homepage": "https://github.com/DomiR/vscode-regreplace/blob/master/README.md",
