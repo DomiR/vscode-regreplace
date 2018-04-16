@@ -28,13 +28,13 @@ This extension contributes the following settings:
 * `suppress-warnings` - (optional) Suppress warnings when regreplace fails.
 * `commands` - array of commands that will be run whenever a file is saved.
   * `name` - command name for debugging.
-  * `match` - regex for matching files to run commands on. e.g. \"\\.(ts|js|tsx)$\" or ["\\.(ts|js|tsx)$"]
-  * `exclude` - regex for matching files *not* to run commands on. e.g. \"^\\.$\" exclude dot files
+  * `match` - regex for matching files to run commands on. e.g. "\\\\.(ts|js|tsx)$" or ["\\\\.(ts|js|tsx)$"]
+  * `exclude` - regex for matching files *not* to run commands on. e.g. "^\\\\.$" exclude dot files
   * `language` - used instead of match, exclude will still work e.g. "typescript"
   * `priority` - command priority determines order.
-  * `find` - use simple find command. e.g. \"** what\"
-  * `regexp` - use regexp find command. Needs to be escaped. e.g. \"(\\n)*\"
-  * `replace` - replace text. Supports groups. e.g. \"$2\n$1\"
+  * `find` - use simple find command. e.g. "** what"
+  * `regexp` - use regexp find command. Needs to be escaped. e.g. "(\\\\n)*"
+  * `replace` - replace text. Supports groups. e.g. "$2\n$1"
   * `global` - run command asynchronously.
 
 
@@ -45,15 +45,20 @@ This sample configuration will replace single quotes with double quotes.
 ```typescript
 "regreplace.commands": [
   {
-      "match": "\\.html?$",    // html
+      "name": "single to double quote",
+      "match": "\\\\.html?$",    // html
       "regexp": "(')(.*?)(')", // single quotes
       "global": true,          // global
       "replace": "\"$2\""      // replace with double quotes
-  },
+  }
+```
+
+This is another helper of mine
+```typescript
   {
       "name": "classname helper",        // name
       "language": "typescriptreact",     // use vscode language names
-      "regexp": "className=\\\"(.+)\"",  // escaped regex
+      "regexp": "className=\"(.+)\"",  // escaped regex
       "global": true,                    // global
       "replace": "className={styles.$1}" // replaced value
   },
@@ -65,12 +70,15 @@ This sample configuration will replace single quotes with double quotes.
 
 ## Release Notes
 
-### 1.2.0
+### 1.3.0
 - Breaking Change: Renaming command `RegReplace: Run all` to `RegReplace: Run all`
 - Use diff patching, so we can keep the cursor position
 - Fix typos in readme, thanks @atnbueno
 - Add language config, thanks @atnbueno
 - Adding `RegReplace: Run single rule`, thanks @iammoen
+
+### 1.2.0
+- Fix readme
 
 ### 1.1.0
 - Breaking Change: Renaming command `Run RegReplace` to `RegReplace: Run`
